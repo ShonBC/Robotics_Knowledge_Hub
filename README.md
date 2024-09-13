@@ -5,9 +5,9 @@ This repository is a comprehensive collection of robotics concepts, with detaile
 ## Table of Contents
 
 1. [Introduction to Robotics](#introduction-to-robotics)
-2. [Robotics Software (ROS2)](#robotics-software)
+2. [Robotics Software (ROS2)](#robotics-software-ros2)
 3. [Path Planning](#path-planning)
-4. [Robot Modeling (Kinematics)](#robot-modeling)
+4. [Robot Modeling (Kinematics)](#robot-modeling-kinematics)
 4. [Perception](#perception)
 5. [Machine Learning in Robotics](#machine-learning-in-robotics)
 6. [Control Systems](#control-systems)
