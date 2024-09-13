@@ -70,6 +70,46 @@ Despite these challenges, the benefits of ROS2 often outweigh the drawbacks for 
 
 
 ## Path Planning
+Path planning is a crucial aspect of robotics, enabling robots to navigate efficiently and safely through their environment. Here are some key algorithms and concepts in robotics path planning:
+
+1. **Dijkstra's Algorithm**: 
+   - A graph search algorithm that finds the shortest path between nodes in a graph.
+   - Guarantees the optimal path but can be slow in large environments.
+   - [More on Dijkstra's Algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
+
+2. **A* (A-Star) Algorithm**:
+   - An extension of Dijkstra's algorithm that uses heuristics to guide the search.
+   - Generally faster than Dijkstra's, especially in large spaces.
+   - Guarantees the optimal path if the heuristic is admissible.
+   - [More on A* Algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm)
+
+3. **Weighted A***:
+   - A variant of A* that allows for a trade-off between optimality and speed.
+   - Uses a weight to bias the search towards the goal, potentially finding a suboptimal path faster.
+   - Useful in time-critical applications where a good path is needed quickly.
+
+4. **RRT (Rapidly-exploring Random Tree)**:
+   - A sampling-based algorithm for quickly searching high-dimensional spaces.
+   - Effective in environments with obstacles and many degrees of freedom.
+   - Does not guarantee optimality but can find a feasible path quickly.
+   - [More on RRT](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree)
+
+5. **RRT* (RRT-Star)**:
+   - An optimizing extension of RRT that converges to an optimal solution.
+   - Continues to improve the path even after finding an initial solution.
+   - More computationally intensive than RRT but produces better paths.
+   - [More on RRT*](https://arxiv.org/abs/1105.1186)
+
+6. **SLAM (Simultaneous Localization and Mapping)**:
+   - Not strictly a path planning algorithm, but crucial for navigation in unknown environments.
+   - Allows a robot to build a map of an unknown environment while simultaneously keeping track of its location within it.
+   - Essential for autonomous navigation in new or changing environments.
+   - [More on SLAM](https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping)
+
+Each of these algorithms has its strengths and is suited to different types of environments and constraints. The choice of algorithm depends on factors such as the known information about the environment, computational resources, time constraints, and the specific requirements of the robotic application.
+
+In ROS2, these algorithms are often implemented in packages such as `nav2` (Navigation2) for general navigation tasks, and specialized packages for specific algorithms or applications.
+
 
 ## Robot Modeling (Kinematics)
 
