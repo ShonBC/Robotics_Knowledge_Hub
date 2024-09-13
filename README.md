@@ -27,7 +27,7 @@ ROS2 (Robot Operating System 2) builds upon the success of ROS1 while introducin
 3. [Services](https://docs.ros.org/en/iron/Concepts/Basic/About-Services.html): Request/reply interactions between nodes.
 4. [Actions](https://docs.ros.org/en/iron/Concepts/Basic/About-Actions.html): For longer tasks, similar to services but preemptable.
 5. [Parameters](https://docs.ros.org/en/iron/Concepts/Basic/About-Parameters.html): Configuration values for nodes.
-6. [Packages]https://docs.ros.org/en/iron/Package-Docs.html): Organization units for ROS2 code.
+6. [Packages](https://docs.ros.org/en/iron/Package-Docs.html): Organization units for ROS2 code.
 7. [Workspaces](https://docs.ros.org/en/iron/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html): Collections of packages sharing a common build system.
 8. [DDS (Data Distribution Service)](https://docs.ros.org/en/iron/Concepts/About-Different-Middleware-Vendors.html): The communication middleware used by ROS2.
 9. [QoS (Quality of Service)](https://docs.ros.org/en/iron/Concepts/About-Quality-of-Service-Settings.html): Policies to configure communication reliability and history.
