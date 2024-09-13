@@ -8,8 +8,8 @@ This repository is a comprehensive collection of robotics concepts, with detaile
 2. [Robotics Software (ROS2)](#robotics-software-ros2)
 3. [Path Planning](#path-planning)
 4. [Robot Modeling (Kinematics)](#robot-modeling-kinematics)
-4. [Perception](#perception)
-5. [Machine Learning in Robotics](#machine-learning-in-robotics)
+4. [Perception (Computer Vision)](#perception-computer-vision)
+5. [Machine Learning and Artificial Intelligence (AI)](#machine-learning-and-artificial-intelligence-ai)
 6. [Control Systems](#control-systems)
 
 ## Introduction to Robotics
@@ -113,9 +113,9 @@ In ROS2, these algorithms are often implemented in packages such as `nav2` (Navi
 
 ## Robot Modeling (Kinematics)
 
-## Perception
+## Perception (Computer Vision)
 
-## Machine Learning in Robotics
+## Machine Learning and Artificial Intelligence (AI)
 
 ## Control Systems
 
