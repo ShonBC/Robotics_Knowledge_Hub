@@ -1,0 +1,15 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build directory
+build/
+
+# Test results
+test-results.txt
+
+# Log files
+*.log
+    
+
