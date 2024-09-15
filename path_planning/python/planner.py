@@ -5,6 +5,41 @@ from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
 
 class Planner:
+    """
+    A class for implementing various path planning algorithms.
+
+    This class provides methods for different path planning algorithms including A*, Weighted A*,
+    Dijkstra's algorithm, RRT (Rapidly-exploring Random Tree), and RRT* (Optimal RRT).
+    It also includes visualization capabilities for the path planning process.
+
+    Attributes:
+        graph (Dict): A dictionary representing the graph for graph-based algorithms.
+        obstacles (List[Tuple[float, float]]): A list of obstacle coordinates for sampling-based algorithms.
+        start (Tuple[float, float]): The start point coordinates.
+        goal (Tuple[float, float]): The goal point coordinates.
+        fig (matplotlib.figure.Figure): The matplotlib figure for visualization.
+        ax (matplotlib.axes.Axes): The matplotlib axes for plotting.
+
+    Methods:
+        set_graph(graph: Dict): Sets the graph for graph-based algorithms.
+        set_obstacles(obstacles: List[Tuple[float, float]]): Sets the obstacles for sampling-based algorithms.
+        set_start_goal(start: Tuple[float, float], goal: Tuple[float, float]): Sets the start and goal points.
+        heuristic(a: Tuple[float, float], b: Tuple[float, float]) -> float: Calculates the heuristic distance between two points.
+        initialize_plot(): Initializes the plot for visualization.
+        update_plot(current, neighbors=None): Updates the plot during the path planning process.
+        plot_final_path(path): Plots the final path found by the algorithm.
+        a_star(visualize: bool = False) -> List[Tuple[float, float]]: Implements the A* algorithm.
+        weighted_a_star(weight: float = 1.5, visualize: bool = False) -> List[Tuple[float, float]]: Implements the Weighted A* algorithm.
+        dijkstra(visualize: bool = False) -> List[Tuple[float, float]]: Implements Dijkstra's algorithm.
+        rrt(max_iterations: int = 1000, step_size: float = 0.1, visualize: bool = False) -> List[Tuple[float, float]]: Implements the RRT algorithm.
+        rrt_star(max_iterations: int = 1000, step_size: float = 0.1, search_radius: float = 0.5, visualize: bool = False) -> List[Tuple[float, float]]: Implements the RRT* algorithm.
+        slam(visualize: bool = False): Placeholder for SLAM implementation.
+        random_state() -> Tuple[float, float]: Generates a random state within the planning space.
+        steer(from_point: Tuple[float, float], to_point: Tuple[float, float], step_size: float) -> Tuple[float, float]: Steers from one point towards another with a maximum step size.
+        collision_free(from_point: Tuple[float, float], to_point: Tuple[float, float]) -> bool: Checks if a path between two points is collision-free.
+        extract_path(tree: Dict, end_node: Tuple[float, float]) -> List[Tuple[float, float]]: Extracts the path from the tree structure used in RRT and RRT*.
+    """
+
     def __init__(self):
         self.graph = {}  # For graph-based algorithms
         self.obstacles = []  # For sampling-based algorithms
@@ -14,19 +49,53 @@ class Planner:
         self.ax = None
 
     def set_graph(self, graph: Dict):
+        """
+        Sets the graph for graph-based algorithms.
+
+        Args:
+            graph (Dict): A dictionary representing the graph where keys are nodes and values are lists of neighboring nodes.
+        """
         self.graph = graph
 
     def set_obstacles(self, obstacles: List[Tuple[float, float]]):
+        """
+        Sets the obstacles for sampling-based algorithms.
+
+        Args:
+            obstacles (List[Tuple[float, float]]): A list of obstacle coordinates.
+        """
         self.obstacles = obstacles
 
     def set_start_goal(self, start: Tuple[float, float], goal: Tuple[float, float]):
+        """
+        Sets the start and goal points for the path planning problem.
+
+        Args:
+            start (Tuple[float, float]): The start point coordinates.
+            goal (Tuple[float, float]): The goal point coordinates.
+        """
         self.start = start
         self.goal = goal
 
     def heuristic(self, a: Tuple[float, float], b: Tuple[float, float]) -> float:
+        """
+        Calculates the heuristic distance between two points.
+
+        Args:
+            a (Tuple[float, float]): The first point.
+            b (Tuple[float, float]): The second point.
+
+        Returns:
+            float: The Euclidean distance between the two points.
+        """
         return np.sqrt((b[0] - a[0])**2 + (b[1] - a[1])**2)
 
     def initialize_plot(self):
+        """
+        Initializes the plot for visualization.
+
+        This method sets up the matplotlib figure and axes, and plots the obstacles, start, and goal points.
+        """
         self.fig, self.ax = plt.subplots()
         self.ax.set_xlim(0, 1)
         self.ax.set_ylim(0, 1)
@@ -35,6 +104,13 @@ class Planner:
         self.ax.plot(*self.goal, 'ro', markersize=10)
 
     def update_plot(self, current, neighbors=None):
+        """
+        Updates the plot during the path planning process.
+
+        Args:
+            current (Tuple[float, float]): The current node being explored.
+            neighbors (List[Tuple[float, float]], optional): The neighbors of the current node. Defaults to None.
+        """
         if neighbors:
             for neighbor in neighbors:
                 self.ax.plot([current[0], neighbor[0]], [current[1], neighbor[1]], 'y-', linewidth=0.5)
@@ -42,6 +118,12 @@ class Planner:
         plt.pause(0.001)
 
     def plot_final_path(self, path):
+        """
+        Plots the final path found by the algorithm.
+
+        Args:
+            path (List[Tuple[float, float]]): The final path as a list of coordinate tuples.
+        """
         path_x, path_y = zip(*path)
         self.ax.plot(path_x, path_y, 'g-', linewidth=4)
         plt.pause(0.001)
@@ -101,6 +183,25 @@ class Planner:
         return []
 
     def weighted_a_star(self, weight: float = 1.5, visualize: bool = False) -> List[Tuple[float, float]]:
+        """
+        Performs Weighted A* search algorithm to find a path from start to goal.
+
+        The Weighted A* algorithm is a variant of A* that allows for a trade-off between optimality and speed
+        by inflating the heuristic value with a weight greater than 1.
+
+        Args:
+            weight (float): The weight to apply to the heuristic. Defaults to 1.5.
+            visualize (bool): If True, visualizes the search process. Defaults to False.
+
+        Returns:
+            List[Tuple[float, float]]: The path from start to goal as a list of coordinate tuples.
+                                       Returns an empty list if no path is found.
+
+        Note:
+            - This method assumes that self.start, self.goal, and self.graph have been properly set.
+            - The heuristic function used is Euclidean distance, multiplied by the weight.
+            - Visualization, if enabled, shows the explored nodes and the final path.
+        """
         if visualize:
             self.initialize_plot()
 
@@ -137,6 +238,22 @@ class Planner:
         return []
 
     def dijkstra(self, visualize: bool = False) -> List[Tuple[float, float]]:
+        """
+        Performs Dijkstra's algorithm to find the shortest path from start to goal.
+
+        Dijkstra's algorithm is a graph search algorithm that finds the shortest path between nodes in a graph.
+
+        Args:
+            visualize (bool): If True, visualizes the search process. Defaults to False.
+
+        Returns:
+            List[Tuple[float, float]]: The shortest path from start to goal as a list of coordinate tuples.
+                                       Returns an empty list if no path is found.
+
+        Note:
+            - This method assumes that self.start, self.goal, and self.graph have been properly set.
+            - Visualization, if enabled, shows the explored nodes and the final path.
+        """
         if visualize:
             self.initialize_plot()
 
@@ -171,6 +288,24 @@ class Planner:
         return []
 
     def rrt(self, max_iterations: int = 1000, step_size: float = 0.1, visualize: bool = False) -> List[Tuple[float, float]]:
+        """
+        Performs Rapidly-exploring Random Tree (RRT) algorithm to find a path from start to goal.
+
+        RRT is a sampling-based algorithm that builds a space-filling tree to explore the state space.
+
+        Args:
+            max_iterations (int): The maximum number of iterations to perform. Defaults to 1000.
+            step_size (float): The maximum distance to extend the tree in each iteration. Defaults to 0.1.
+            visualize (bool): If True, visualizes the search process. Defaults to False.
+
+        Returns:
+            List[Tuple[float, float]]: The path from start to goal as a list of coordinate tuples.
+                                       Returns an empty list if no path is found.
+
+        Note:
+            - This method assumes that self.start, self.goal, and self.obstacles have been properly set.
+            - Visualization, if enabled, shows the tree growth and the final path.
+        """
         if visualize:
             self.initialize_plot()
 
@@ -197,6 +332,25 @@ class Planner:
         return []
 
     def rrt_star(self, max_iterations: int = 1000, step_size: float = 0.1, search_radius: float = 0.5, visualize: bool = False) -> List[Tuple[float, float]]:
+        """
+        Performs RRT* (Optimal Rapidly-exploring Random Tree) algorithm to find an optimal path from start to goal.
+
+        RRT* is an asymptotically optimal variant of RRT that continues to optimize the path as the number of samples increases.
+
+        Args:
+            max_iterations (int): The maximum number of iterations to perform. Defaults to 1000.
+            step_size (float): The maximum distance to extend the tree in each iteration. Defaults to 0.1.
+            search_radius (float): The radius within which nodes are considered for rewiring. Defaults to 0.5.
+            visualize (bool): If True, visualizes the search process. Defaults to False.
+
+        Returns:
+            List[Tuple[float, float]]: The optimal path from start to goal as a list of coordinate tuples.
+                                       Returns an empty list if no path is found.
+
+        Note:
+            - This method assumes that self.start, self.goal, and self.obstacles have been properly set.
+            - Visualization, if enabled, shows the tree growth and the final path.
+        """
         if visualize:
             self.initialize_plot()
 
@@ -253,9 +407,26 @@ class Planner:
         return None
 
     def random_state(self) -> Tuple[float, float]:
+        """
+        Generate a random state within the planning space.
+
+        Returns:
+            Tuple[float, float]: A tuple representing a random (x, y) coordinate within a 1x1 space.
+        """
         return (random.uniform(0, 1), random.uniform(0, 1))  # Assuming a 1x1 space
 
     def steer(self, from_point: Tuple[float, float], to_point: Tuple[float, float], step_size: float) -> Tuple[float, float]:
+        """
+        Steer from one point towards another with a maximum step size.
+
+        Args:
+            from_point (Tuple[float, float]): The starting point.
+            to_point (Tuple[float, float]): The target point to steer towards.
+            step_size (float): The maximum distance to move.
+
+        Returns:
+            Tuple[float, float]: The new point after steering.
+        """
         dx = to_point[0] - from_point[0]
         dy = to_point[1] - from_point[1]
         distance = np.sqrt(dx**2 + dy**2)
@@ -267,6 +438,19 @@ class Planner:
                     from_point[1] + step_size * np.sin(theta))
 
     def collision_free(self, from_point: Tuple[float, float], to_point: Tuple[float, float]) -> bool:
+        """
+        Check if a path between two points is collision-free.
+
+        Args:
+            from_point (Tuple[float, float]): The starting point of the path.
+            to_point (Tuple[float, float]): The ending point of the path.
+
+        Returns:
+            bool: True if the path is collision-free, False otherwise.
+
+        Note:
+            This is a simplified collision check. In a real scenario, this would be more complex.
+        """
         # Simplified collision check. In a real scenario, this would be more complex.
         for obstacle in self.obstacles:
             if self.heuristic(obstacle, to_point) < 0.1:  # Assuming obstacles are points with some radius
@@ -274,6 +458,16 @@ class Planner:
         return True
 
     def extract_path(self, tree: Dict, end_node: Tuple[float, float]) -> List[Tuple[float, float]]:
+        """
+        Extract the path from the tree structure used in RRT and RRT*.
+
+        Args:
+            tree (Dict): A dictionary representing the tree structure where keys are nodes and values are parent nodes.
+            end_node (Tuple[float, float]): The end node of the path.
+
+        Returns:
+            List[Tuple[float, float]]: The extracted path from start to end_node.
+        """
         path = []
         current = end_node
         while current is not None:
@@ -282,6 +476,12 @@ class Planner:
         return path[::-1]
 
 def main():
+    """
+    Main function to demonstrate the usage of the Planner class.
+
+    This function creates a Planner instance, sets up a graph, start and goal points,
+    adds obstacles, and runs the A* algorithm with visualization.
+    """
     planner = Planner()
     # Example usage
     # Create a larger, more interesting graph
