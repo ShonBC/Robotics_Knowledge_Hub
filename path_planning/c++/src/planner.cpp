@@ -1,3 +1,4 @@
+#include "../include/planner.hpp"
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -6,12 +7,11 @@
 #include <random>
 #include <algorithm>
 #include <limits>
-
-// Note: This C++ version doesn't include visualization. You'd need to use a C++ plotting library for that.
+#include <functional>
 
 class Planner {
 private:
-    std::unordered_map<std::pair<double, double>, std::vector<std::pair<double, double>>> graph;
+    std::unordered_map<std::pair<double, double>, std::vector<std::pair<double, double>>, std::hash<std::pair<double, double>>> graph;
     std::vector<std::pair<double, double>> obstacles;
     std::pair<double, double> start;
     std::pair<double, double> goal;
@@ -19,7 +19,7 @@ private:
 public:
     Planner() = default;
 
-    void set_graph(const std::unordered_map<std::pair<double, double>, std::vector<std::pair<double, double>>>& g) {
+    void set_graph(const std::unordered_map<std::pair<double, double>, std::vector<std::pair<double, double>>, std::hash<std::pair<double, double>>>& g) {
         graph = g;
     }
 
@@ -65,13 +65,13 @@ public:
                 return path;
             }
 
-            for (const auto& neighbor : graph[current]) {
+            for (const auto& neighbor : graph.at(current)) {
                 double tentative_g_score = g_score[current] + heuristic(current, neighbor);
                 if (g_score.find(neighbor) == g_score.end() || tentative_g_score < g_score[neighbor]) {
                     came_from[neighbor] = current;
                     g_score[neighbor] = tentative_g_score;
                     f_score[neighbor] = g_score[neighbor] + heuristic(neighbor, goal);
-                    open_set.push({f_score[neighbor], neighbor});
+                    open_set.push(std::make_pair(f_score[neighbor], neighbor));
                 }
             }
         }
@@ -111,46 +111,3 @@ public:
         return true;
     }
 };
-
-int main() {
-    Planner planner;
-    
-    // Example usage
-    std::unordered_map<std::pair<double, double>, std::vector<std::pair<double, double>>> graph;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
-
-    for (int x = 0; x < 10; ++x) {
-        for (int y = 0; y < 10; ++y) {
-            std::vector<std::pair<double, double>> neighbors;
-            for (const auto& [dx, dy] : std::vector<std::pair<int, int>>{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
-                int nx = x + dx, ny = y + dy;
-                if (0 <= nx && nx < 10 && 0 <= ny && ny < 10) {
-                    if (dis(gen) > 0.3) {
-                        neighbors.push_back({nx/10.0, ny/10.0});
-                    }
-                }
-            }
-            graph[{x/10.0, y/10.0}] = neighbors;
-        }
-    }
-
-    planner.set_graph(graph);
-    planner.set_start_goal({0, 0}, {0.9, 0.9});
-
-    std::vector<std::pair<double, double>> obstacles;
-    for (int i = 0; i < 10; ++i) {
-        obstacles.push_back({dis(gen) * 0.7 + 0.1, dis(gen) * 0.7 + 0.1});
-    }
-    planner.set_obstacles(obstacles);
-
-    auto path = planner.a_star();
-    std::cout << "A* Path:" << std::endl;
-    for (const auto& point : path) {
-        std::cout << "(" << point.first << ", " << point.second << ") ";
-    }
-    std::cout << std::endl;
-
-    return 0;
-}
