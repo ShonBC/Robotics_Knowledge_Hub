@@ -70,34 +70,90 @@ Despite these challenges, the benefits of ROS2 often outweigh the drawbacks for 
 
 
 ## Path Planning
-Path planning is a crucial aspect of robotics, enabling robots to navigate efficiently and safely through their environment. Here are some key algorithms and concepts in robotics path planning:
+Path planning is a crucial aspect of robotics, enabling robots to navigate efficiently and safely through their environment. It can be broadly categorized into two main types: global path planning and local path planning.
+
+### Global Path Planning
+Global path planning involves generating a complete path from the start point to the goal, considering the entire known environment. This is typically done before the robot starts moving and provides an overall strategy for navigation.
+
+- Advantages: Considers the entire environment, can find optimal paths, avoids local minima.
+- Challenges: Computationally intensive, may struggle with dynamic environments.
+- Common algorithms: A*, Dijkstra's, RRT, RRT*
+
+### Local Path Planning
+Local path planning focuses on navigating the immediate surroundings of the robot, often in real-time. It's used for obstacle avoidance and adapting to changes in the environment.
+
+- Advantages: Reactive to immediate surroundings, handles dynamic obstacles, computationally lighter.
+- Challenges: May lead to suboptimal paths, can get stuck in local minima.
+- Common algorithms: Vector Field Histogram (VFH), Dynamic Window Approach (DWA)
+
+
+7. **Dynamic Obstacle Planning**:
+   - Focuses on planning paths in environments where obstacles can move or change over time.
+   - Crucial for real-world robotics applications, especially in human-populated environments.
+   - Key challenges include:
+     - Predicting future obstacle movements
+     - Rapidly replanning paths as the environment changes
+     - Balancing safety, efficiency, and smoothness of motion
+   - Common approaches include:
+     a) **Velocity Obstacles (VO)**:
+        - Represents obstacles in the velocity space of the robot
+        - Allows for efficient computation of collision-free velocities
+        - [More on Velocity Obstacles](https://en.wikipedia.org/wiki/Velocity_obstacle)
+     b) **Dynamic Window Approach (DWA)**:
+        - Samples the robot's control space (velocities) and simulates trajectories
+        - Evaluates trajectories based on clearance, velocity, and goal-directedness
+        - [More on Dynamic Window Approach](https://en.wikipedia.org/wiki/Dynamic_window_approach)
+     c) **Timed Elastic Bands (TEB)**:
+        - Represents the trajectory as a sequence of robot poses
+        - Optimizes the trajectory in real-time considering obstacles and constraints
+        - [More on Timed Elastic Bands](https://ieeexplore.ieee.org/document/6225063)
+   - Often combined with prediction algorithms to anticipate future obstacle positions
+   - May integrate with global planners for overall navigation strategy
+   - Requires careful tuning to balance reactivity with stability of motion
+
+
+In practice, many robotic systems use a combination of global and local planning for effective navigation. Here are some key algorithms and concepts in robotics path planning:
 
 1. **Dijkstra's Algorithm**: 
    - A graph search algorithm that finds the shortest path between nodes in a graph.
+   - It is a single-source shortest path algorithm, meaning it finds the shortest path from a **starting node** to all other nodes in the graph.
+   - It is a greedy algorithm, meaning it always chooses the shortest path at each step.
    - Guarantees the optimal path but can be slow in large environments.
+   - Good for precomputing the shortest path to all nodes in a static environment.
    - [More on Dijkstra's Algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
 
 2. **A* (A-Star) Algorithm**:
    - An extension of Dijkstra's algorithm that uses heuristics to guide the search.
+   - The heuristic function is used to estimate the cost to reach the goal from a given node.
    - Generally faster than Dijkstra's, especially in large spaces.
-   - Guarantees the optimal path if the heuristic is admissible.
+   - Guarantees the optimal path if the heuristic is admissible i.e. it never overestimates the cost to reach the goal.
    - [More on A* Algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm)
 
 3. **Weighted A***:
    - A variant of A* that allows for a trade-off between optimality and speed.
-   - Uses a weight to bias the search towards the goal, potentially finding a suboptimal path faster.
+   - Applies a weight to the heuristic function which biases the search towards the goal, potentially finding a suboptimal path faster.
    - Useful in time-critical applications where a good path is needed quickly.
+   - [More on Weighted A*](https://en.wikipedia.org/wiki/A*_search_algorithm#Weighted_A*)
 
 4. **RRT (Rapidly-exploring Random Tree)**:
    - A sampling-based algorithm for quickly searching high-dimensional spaces.
+   - Nodes are added to the tree by randomly sampling the space and connecting to the nearest existing node.
    - Effective in environments with obstacles and many degrees of freedom.
    - Does not guarantee optimality but can find a feasible path quickly.
+   - Unlike A*, RRT can handle continuous state spaces without discretization.
+   - RRT scales better to high-dimensional problems where A* suffers from the "curse of dimensionality" i.e., the number of nodes to explore grows exponentially with the number of dimensions in the search space.
+   - Better suited for real-time applications in complex, dynamic environments than A*.
+   - Often creates a "jagged" path, which need to be smoothed using post-processing techniques in real life applications.
    - [More on RRT](https://en.wikipedia.org/wiki/Rapidly-exploring_random_tree)
 
 5. **RRT* (RRT-Star)**:
    - An optimizing extension of RRT that converges to an optimal solution.
+   - Unlike RRT, RRT* includes a rewiring step that allows it to improve the tree structure by:
+     - Implementing a "near neighbor" search to find potential better parent nodes for existing vertices.
+     - Using a cost function to evaluate and potentially replace edges with lower-cost alternatives.
    - Continues to improve the path even after finding an initial solution.
    - More computationally intensive than RRT but produces better paths.
+   - Asymptotically optimal, meaning it will find the optimal path given enough time, which RRT does not guarantee.
    - [More on RRT*](https://arxiv.org/abs/1105.1186)
 
 6. **SLAM (Simultaneous Localization and Mapping)**:
